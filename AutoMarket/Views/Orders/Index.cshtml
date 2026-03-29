@@ -1,0 +1,62 @@
+﻿@model List<PizzaApp.Models.Order>
+
+<h2>Orders</h2>
+
+@foreach (var order in Model)
+{
+    <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;">
+        
+        <h4>Order #@order.Id</h4>
+        <p>
+            Status:
+            <strong style="color:@(order.Status == "Completed" ? "green" : "orange")">
+                @order.Status
+            </strong>
+        </p>
+        <p>Date: @order.OrderDate</p>
+
+        <form asp-action="Delete" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="@order.Id" />
+            <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+            </button>
+        </form>
+
+        <form asp-action="ToggleStatus" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="@order.Id" />
+
+            <button type="submit" class="btn btn-sm
+                @(order.Status == "Pending" ? "btn-success" : "btn-warning")">
+
+                @(order.Status == "Pending" ? "Mark as Done" : "Mark as Pending")
+
+            </button>
+        </form>
+
+        <table class="table mt-2">
+            <thead>
+                <tr>
+                    <th>Pizza</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in order.Items)
+                {
+                    <tr>
+                        <td>@item.Pizza?.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@($"{item.Price * item.Quantity:F2}€")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h5>
+            Total:
+            @order.Items.Sum(i => i.Price * i.Quantity).ToString("F2")€
+        </h5>
+
+    </div>
+}

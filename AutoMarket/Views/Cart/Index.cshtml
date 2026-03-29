@@ -1,0 +1,70 @@
+﻿@model List<PizzaApp.Models.CartItem>
+
+<h2>Cart</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["Error"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pizza</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.PizzaName</td>
+                    <td>
+                        <form asp-action="Decrease" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.PizzaId" />
+                            <button type="submit" class="btn btn-warning btn-sm">-</button>
+                        </form>
+
+                        <span style="margin: 0 10px;">@item.Quantity</span>
+
+                        <form asp-action="Increase" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.PizzaId" />
+                            <button type="submit" class="btn btn-success btn-sm">+</button>
+                        </form>
+                    </td>
+                    <td>@($"{item.Price * item.Quantity:F2}€")</td>
+                    <td>
+                        <form asp-action="RemoveFromCart" method="post">
+                            <input type="hidden" name="id" value="@item.PizzaId" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>
+        Total:
+        @($"{Model.Sum(x => x.Price * x.Quantity):F2}€")
+    </h4>
+
+    <form asp-action="Checkout" method="post">
+        <button type="submit" class="btn btn-success">
+            Checkout
+        </button>
+    </form>
+}
