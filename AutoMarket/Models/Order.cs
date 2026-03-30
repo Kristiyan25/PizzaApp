@@ -6,10 +6,16 @@ namespace PizzaApp.Models
     {
         public int Id { get; set; }
 
-        public string CustomerName { get; set; } = "";
+       
+        public string UserName { get; set; } = "";
 
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        
+        public decimal TotalPrice { get; set; }
+
+        
         public string Status { get; set; } = "Pending";
 
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();

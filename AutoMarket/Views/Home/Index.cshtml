@@ -1,8 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
+    ViewData["FullWidth"] = true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="home-hero">
+    <div class="overlay">
+        <h1>🍕 Welcome to PizzaApp</h1>
+        <p>Order your favorite pizza quickly and easily</p>
+
+        <a asp-controller="Pizza" asp-action="Index" class="btn btn-primary btn-lg mt-3">
+            View Menu
+        </a>
+    </div>
 </div>

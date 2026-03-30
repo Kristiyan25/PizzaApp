@@ -4,34 +4,54 @@
 
 @foreach (var order in Model)
 {
-    <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px;">
-        
+    <div class="card mb-4 p-3 shadow-sm">
+
         <h4>Order #@order.Id</h4>
+
+        <p><strong>User:</strong> @order.UserName</p>
+
         <p>
-            Status:
-            <strong style="color:@(order.Status == "Completed" ? "green" : "orange")">
+            <strong>Status:</strong>
+            <span class="badge
+                @(order.Status == "Pending" ? "bg-warning" :
+                                    order.Status == "Preparing" ? "bg-info" :
+                                    "bg-success")">
                 @order.Status
-            </strong>
+            </span>
         </p>
-        <p>Date: @order.OrderDate</p>
 
-        <form asp-action="Delete" method="post" style="display:inline;">
-            <input type="hidden" name="id" value="@order.Id" />
-            <button type="submit" class="btn btn-danger btn-sm">
-                Delete
-            </button>
-        </form>
+        <p><strong>Date:</strong> @order.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
 
-        <form asp-action="ToggleStatus" method="post" style="display:inline;">
-            <input type="hidden" name="id" value="@order.Id" />
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="d-flex gap-2 mb-2">
+                <form asp-action="UpdateStatus" method="post">
+                    <input type="hidden" name="id" value="@order.Id" />
 
-            <button type="submit" class="btn btn-sm
-                @(order.Status == "Pending" ? "btn-success" : "btn-warning")">
+                    <button name="status" value="Preparing" class="btn btn-warning btn-sm"
+                        @(order.Status == "Preparing" ? "disabled" : "")>
+                        Preparing
+                    </button>
 
-                @(order.Status == "Pending" ? "Mark as Done" : "Mark as Pending")
+                    <button name="status" value="Delivered" class="btn btn-success btn-sm"
+                        @(order.Status == "Delivered" ? "disabled" : "")>
+                        Delivered
+                    </button>
+                </form>
 
-            </button>
-        </form>
+            </div>
+        }
+        @if (User.IsInRole("Admin"))
+        {
+            <form asp-action="Delete" method="post" style="display:inline;">
+                <input type="hidden" name="id" value="@order.Id" />
+
+                <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Are you sure you want to delete this order?');">
+                    Delete
+                </button>
+            </form>
+        }
 
         <table class="table mt-2">
             <thead>
@@ -53,10 +73,7 @@
             </tbody>
         </table>
 
-        <h5>
-            Total:
-            @order.Items.Sum(i => i.Price * i.Quantity).ToString("F2")€
-        </h5>
+        <h5>Total: @order.TotalPrice.ToString("F2")€</h5>
 
     </div>
 }

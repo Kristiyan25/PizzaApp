@@ -1,4 +1,4 @@
-namespace AutoMarket.Models
+namespace PizzaApp.Models
 {
     public class ErrorViewModel
     {

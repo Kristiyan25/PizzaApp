@@ -4,10 +4,10 @@
 
 namespace PizzaApp.Migrations
 {
-    /// <inheritdoc />
+    
     public partial class FixImageUrlNullable : Migration
     {
-        /// <inheritdoc />
+        
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
@@ -19,7 +19,7 @@ namespace PizzaApp.Migrations
                 oldType: "nvarchar(max)");
         }
 
-        /// <inheritdoc />
+        
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(

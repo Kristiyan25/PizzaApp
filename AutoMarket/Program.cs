@@ -4,20 +4,20 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Connection string
+
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection")
     ?? throw new InvalidOperationException("Connection string not found");
 
-// DB
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Identity
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 
-    // 🔓 махаме всички изисквания за парола
+    
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
@@ -30,7 +30,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 builder.Services.AddRazorPages();
 
-// MVC
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -42,13 +42,13 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-    // Create Admin role
+    
     if (!await roleManager.RoleExistsAsync("Admin"))
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 
-    // Create Admin user
+    
     var adminUsername = "admin";
     var adminUser = await userManager.FindByNameAsync(adminUsername);
 
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Middleware
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -81,7 +81,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Routes
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

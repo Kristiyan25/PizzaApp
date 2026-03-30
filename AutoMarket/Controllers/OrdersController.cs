@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzaApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class OrdersController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -13,14 +15,44 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var orders = await _context.Orders
+        var userName = User.Identity.Name;
+
+        var query = _context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Pizza)
-            .ToListAsync();
+            .AsQueryable();
+
+        
+        if (!User.IsInRole("Admin"))
+        {
+            query = query.Where(o => o.UserName == userName);
+        }
+
+        var orders = await query.ToListAsync();
 
         return View(orders);
     }
 
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> UpdateStatus(int id, string status)
+    {
+        var order = await _context.Orders.FindAsync(id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        order.Status = status;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
@@ -33,30 +65,8 @@ public class OrdersController : Controller
             return NotFound();
         }
 
+        _context.OrderItems.RemoveRange(order.Items); 
         _context.Orders.Remove(order);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> ToggleStatus(int id)
-    {
-        var order = await _context.Orders.FindAsync(id);
-
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        if (order.Status == "Pending")
-        {
-            order.Status = "Completed";
-        }
-        else
-        {
-            order.Status = "Pending";
-        }
 
         await _context.SaveChangesAsync();
 
